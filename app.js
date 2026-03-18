@@ -1,73 +1,110 @@
-// 1. IMPORT FIREBASE LIBRARIES
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, query, where, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// 2. YOUR FIREBASE CONFIG (PASTE YOUR INFO FROM STEP 3 HERE)
+// --- PASTE YOUR FIREBASE CONFIG HERE ---
 const firebaseConfig = {
-  apiKey: "AIzaSyDZHWlIlrqqqpjOGFlZmp63ubRQkpRLReo",
-  authDomain: "ai-roleplay-chat-66485.firebaseapp.com",
-  projectId: "ai-roleplay-chat-66485",
-  storageBucket: "ai-roleplay-chat-66485.firebasestorage.app",
-  messagingSenderId: "417127627684",
-  appId: "1:417127627684:web:8032795157acc5f9d25f31"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_BUCKET",
+    messagingSenderId: "YOUR_ID",
+    appId: "YOUR_APP_ID"
 };
+// ---------------------------------------
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// --- APP LOGIC ---
+// Screens
+const authScreen = document.getElementById('auth-screen');
+const mainApp = document.getElementById('main-app');
+const dashView = document.getElementById('dashboard-screen');
+const chatView = document.getElementById('chat-screen');
+const createView = document.getElementById('create-character-screen');
 
-const screens = {
-    auth: document.getElementById('auth-screen'),
-    dash: document.getElementById('dashboard-screen'),
-    create: document.getElementById('create-character-screen'),
-    chat: document.getElementById('chat-screen')
-};
-
-function showScreen(screenKey) {
-    Object.values(screens).forEach(s => s.classList.add('hidden'));
-    screens[screenKey].classList.remove('hidden');
+function showView(view) {
+    [dashView, chatView, createView].forEach(v => v.classList.add('hidden'));
+    view.classList.remove('hidden');
 }
 
-// REGISTER NEW USER
-document.getElementById('register-btn').addEventListener('click', async () => {
+// Auth Logic
+document.getElementById('register-btn').addEventListener('click', () => {
     const email = document.getElementById('email-input').value;
     const pass = document.getElementById('password-input').value;
-    try {
-        await createUserWithEmailAndPassword(auth, email, pass);
-        alert("Account Created!");
-    } catch (error) {
-        alert(error.message);
-    }
+    createUserWithEmailAndPassword(auth, email, pass).catch(err => alert(err.message));
 });
 
-// LOGIN USER
-document.getElementById('login-btn').addEventListener('click', async () => {
+document.getElementById('login-btn').addEventListener('click', () => {
     const email = document.getElementById('email-input').value;
     const pass = document.getElementById('password-input').value;
-    try {
-        await signInWithEmailAndPassword(auth, email, pass);
-    } catch (error) {
-        alert(error.message);
-    }
+    signInWithEmailAndPassword(auth, email, pass).catch(err => alert(err.message));
 });
 
-// LOGOUT
 document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
 
-// MONITOR AUTH STATE (Checks if you are logged in or out)
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        showScreen('dash');
-        loadCharacters(); // We'll build this next!
+        authScreen.classList.add('hidden');
+        mainApp.classList.remove('hidden');
+        document.getElementById('user-display-name').innerText = user.email.split('@')[0];
+        loadPublicCharacters();
     } else {
-        showScreen('auth');
+        authScreen.classList.remove('hidden');
+        mainApp.classList.add('hidden');
     }
 });
 
-// Navigation Buttons
-document.getElementById('open-create-modal-btn').addEventListener('click', () => showScreen('create'));
-document.getElementById('cancel-create-btn').addEventListener('click', () => showScreen('dash'));
+// UI Navigation
+document.getElementById('open-create-modal-btn').addEventListener('click', () => showView(createView));
+document.getElementById('cancel-create-btn').addEventListener('click', () => showView(dashView));
+document.getElementById('back-to-dash-btn').addEventListener('click', () => showView(dashView));
+
+// Create Character
+document.getElementById('character-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newChar = {
+        name: document.getElementById('char-name').value,
+        image: document.getElementById('char-image').value,
+        desc: document.getElementById('char-desc').value,
+        greeting: document.getElementById('char-greeting').value,
+        definition: document.getElementById('char-def').value,
+        visibility: document.getElementById('char-visibility').value,
+        creatorId: auth.currentUser.uid
+    };
+
+    await addDoc(collection(db, "characters"), newChar);
+    alert("Character Created!");
+    showView(dashView);
+});
+
+// Load Characters
+async function loadPublicCharacters() {
+    const q = query(collection(db, "characters"), where("visibility", "==", "public"));
+    const snapshot = await getDocs(q);
+    const list = document.getElementById('character-list');
+    list.innerHTML = "";
+    
+    snapshot.forEach(doc => {
+        const char = doc.data();
+        const card = document.createElement('div');
+        card.className = 'char-card';
+        card.innerHTML = `
+            <img src="${char.image}">
+            <div class="char-info">
+                <h4>${char.name}</h4>
+                <p>by ${char.desc}</p>
+            </div>
+        `;
+        card.onclick = () => openChat(char);
+        list.appendChild(card);
+    });
+}
+
+function openChat(char) {
+    showView(chatView);
+    document.getElementById('chat-character-name').innerText = char.name;
+    document.getElementById('chat-character-img').src = char.image;
+    document.getElementById('chat-messages').innerHTML = `<div class="msg ai-msg">${char.greeting}</div>`;
+}
