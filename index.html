@@ -3,82 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Roleplay Chat</title>
+    <title>AI Roleplay</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="auth-screen" class="screen active">
-        <h1>Welcome to AI Roleplay</h1>
-        <p>Log in to create characters and save your chats.</p>
-        <div class="auth-box">
-            <input type="email" id="email-input" placeholder="Email Address">
+    <div id="auth-screen" class="screen">
+        <div class="auth-card">
+            <h1>AI Roleplay</h1>
+            <input type="email" id="email-input" placeholder="Email">
             <input type="password" id="password-input" placeholder="Password">
             <button id="login-btn">Log In</button>
-            <button id="register-btn">Create Account</button>
+            <button id="register-btn" class="secondary">Sign Up</button>
         </div>
     </div>
 
-    <div id="dashboard-screen" class="screen hidden">
-        <header>
-            <h2>My Dashboard</h2>
-            <button id="logout-btn">Log Out</button>
-        </header>
+    <div id="main-app" class="screen hidden">
         
-        <div class="controls">
-            <button id="open-create-modal-btn">+ Create New Character</button>
-            <button id="view-public-btn">View Public Characters</button>
-        </div>
-
-        <div id="character-list" class="grid-container">
-            </div>
-    </div>
-
-    <div id="create-character-screen" class="screen hidden">
-        <header>
-            <h2>Create / Edit Character</h2>
-            <button id="cancel-create-btn">Cancel</button>
-        </header>
-        <form id="character-form">
-            <label>Character Name *</label>
-            <input type="text" id="char-name" required>
-
-            <label>Profile Picture URL *</label>
-            <input type="url" id="char-image" placeholder="https://..." required>
-
-            <label>Short Description *</label>
-            <input type="text" id="char-desc" placeholder="e.g. A grumpy wizard" required>
-
-            <label>Greeting Message *</label>
-            <textarea id="char-greeting" placeholder="What does the character say first?" required></textarea>
-
-            <label>Character Definition (Optional - How they should act)</label>
-            <textarea id="char-def" placeholder="Personality traits, background info..."></textarea>
-
-            <label>Visibility</label>
-            <select id="char-visibility">
-                <option value="private">Private (Only me)</option>
-                <option value="public">Public (Everyone)</option>
-            </select>
-
-            <button type="submit" id="save-character-btn">Save Character</button>
-        </form>
-    </div>
-
-    <div id="chat-screen" class="screen hidden">
-        <header>
-            <button id="back-to-dash-btn">← Back</button>
-            <h2 id="chat-character-name">Character Name</h2>
-            <img id="chat-character-img" src="" alt="Profile" width="40" height="40">
-        </header>
-
-        <div id="chat-messages" class="messages-container">
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <button id="open-create-modal-btn" class="create-btn">+ Create</button>
+                <nav>
+                    <button class="nav-item active">Feed</button>
+                    <button class="nav-item">Discover</button>
+                </nav>
             </div>
 
-        <div class="chat-input-area">
-            <input type="text" id="message-input" placeholder="Type your message...">
-            <button id="send-msg-btn">Send</button>
-        </div>
+            <div class="recent-chats">
+                <p class="section-title">Chats</p>
+                <div id="recent-list">
+                    </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <img src="https://via.placeholder.com/40" id="user-avatar" alt="User">
+                    <span id="user-display-name">User Name</span>
+                </div>
+                <button id="logout-btn">Log Out</button>
+            </div>
+        </aside>
+
+        <main class="content-area">
+            <header class="main-header">
+                <input type="text" id="search-bar" placeholder="Search characters...">
+            </header>
+
+            <div id="dashboard-screen">
+                <h2>Welcome back</h2>
+                <div id="character-list" class="character-grid">
+                    </div>
+            </div>
+
+            <div id="chat-screen" class="hidden">
+                <div class="chat-header">
+                    <button id="back-to-dash-btn">←</button>
+                    <img id="chat-character-img" src="">
+                    <h3 id="chat-character-name">Name</h3>
+                </div>
+                <div id="chat-messages"></div>
+                <div class="chat-input-wrapper">
+                    <input type="text" id="message-input" placeholder="Type a message...">
+                    <button id="send-msg-btn">Send</button>
+                </div>
+            </div>
+
+            <div id="create-character-screen" class="hidden">
+                <h2>Create Character</h2>
+                <form id="character-form">
+                    <input type="text" id="char-name" placeholder="Name" required>
+                    <input type="url" id="char-image" placeholder="Image URL" required>
+                    <input type="text" id="char-desc" placeholder="Short description" required>
+                    <textarea id="char-greeting" placeholder="Greeting message" required></textarea>
+                    <textarea id="char-def" placeholder="Character Definition (Optional)"></textarea>
+                    <select id="char-visibility">
+                        <option value="public">Public</option>
+                        <option value="private">Private</option>
+                    </select>
+                    <button type="submit">Create</button>
+                    <button type="button" id="cancel-create-btn" class="secondary">Cancel</button>
+                </form>
+            </div>
+        </main>
+
     </div>
 
     <script type="module" src="app.js"></script>
