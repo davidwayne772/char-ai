@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Roleplay Chat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="auth-screen" class="screen active">
+        <h1>Welcome to AI Roleplay</h1>
+        <p>Log in to create characters and save your chats.</p>
+        <div class="auth-box">
+            <input type="email" id="email-input" placeholder="Email Address">
+            <input type="password" id="password-input" placeholder="Password">
+            <button id="login-btn">Log In</button>
+            <button id="register-btn">Create Account</button>
+        </div>
+    </div>
+
+    <div id="dashboard-screen" class="screen hidden">
+        <header>
+            <h2>My Dashboard</h2>
+            <button id="logout-btn">Log Out</button>
+        </header>
+        
+        <div class="controls">
+            <button id="open-create-modal-btn">+ Create New Character</button>
+            <button id="view-public-btn">View Public Characters</button>
+        </div>
+
+        <div id="character-list" class="grid-container">
+            </div>
+    </div>
+
+    <div id="create-character-screen" class="screen hidden">
+        <header>
+            <h2>Create / Edit Character</h2>
+            <button id="cancel-create-btn">Cancel</button>
+        </header>
+        <form id="character-form">
+            <label>Character Name *</label>
+            <input type="text" id="char-name" required>
+
+            <label>Profile Picture URL *</label>
+            <input type="url" id="char-image" placeholder="https://..." required>
+
+            <label>Short Description *</label>
+            <input type="text" id="char-desc" placeholder="e.g. A grumpy wizard" required>
+
+            <label>Greeting Message *</label>
+            <textarea id="char-greeting" placeholder="What does the character say first?" required></textarea>
+
+            <label>Character Definition (Optional - How they should act)</label>
+            <textarea id="char-def" placeholder="Personality traits, background info..."></textarea>
+
+            <label>Visibility</label>
+            <select id="char-visibility">
+                <option value="private">Private (Only me)</option>
+                <option value="public">Public (Everyone)</option>
+            </select>
+
+            <button type="submit" id="save-character-btn">Save Character</button>
+        </form>
+    </div>
+
+    <div id="chat-screen" class="screen hidden">
+        <header>
+            <button id="back-to-dash-btn">← Back</button>
+            <h2 id="chat-character-name">Character Name</h2>
+            <img id="chat-character-img" src="" alt="Profile" width="40" height="40">
+        </header>
+
+        <div id="chat-messages" class="messages-container">
+            </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="message-input" placeholder="Type your message...">
+            <button id="send-msg-btn">Send</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
